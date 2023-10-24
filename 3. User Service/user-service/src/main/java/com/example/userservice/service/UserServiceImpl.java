@@ -1,10 +1,12 @@
 package com.example.userservice.service;
 
+import com.example.userservice.client.OrderServiceClient;
 import com.example.userservice.dto.UserDto;
 import com.example.userservice.jpa.UserEntity;
 import com.example.userservice.jpa.UserRepository;
 import com.example.userservice.vo.ResponseOrder;
 import com.example.userservice.vo.ResponseUser;
+import feign.FeignException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,16 +32,19 @@ public class UserServiceImpl implements UserService{
 
     Environment env;
     RestTemplate restTemplate;
+    OrderServiceClient orderServiceClient;
+
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository,
-                           BCryptPasswordEncoder passwordEncoder,
-                           Environment env,
-                           RestTemplate restTemplate) {
-
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env,
+                           RestTemplate restTemplate, OrderServiceClient orderServiceClient) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.env = env;
+        this.restTemplate = restTemplate;
+        this.orderServiceClient = orderServiceClient;
     }
+
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -60,13 +65,29 @@ public class UserServiceImpl implements UserService{
 
         UserDto userDto = new ModelMapper().map(userEntity,UserDto.class);
 //        List<ResponseOrder> orders = new ArrayList<>();
-        //
-        String orderUrl = "http://127.0.0.1:8000/order-service/%s/orders";
-        ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
-                new ParameterizedTypeReference<List<ResponseOrder>>() {
-        });
 
-        List<ResponseOrder> orderslist = orderListResponse.getBody();
+//        *Using as rest template *
+//        String orderUrl = "http://127.0.0.1:8000/order-service/%s/orders";
+//        ResponseEntity<List<ResponseOrder>> orderListResponse = restTemplate.exchange(orderUrl, HttpMethod.GET, null,
+//                new ParameterizedTypeReference<List<ResponseOrder>>() {
+//        });
+//
+//        List<ResponseOrder> orderslist = orderListResponse.getBody();
+
+//        using a feign client
+
+        //Feign Exception handling try catch
+
+//        List<ResponseOrder> orderslist = null;
+//        try {
+//            orderslist = orderServiceClient.getOrders(userId);
+//        } catch (FeignException ex){
+//            log.error(ex.getMessage());
+//        }
+//
+//        userDto.setOrders(orderslist);
+
+        List<ResponseOrder> orderslist = orderServiceClient.getOrders(userId);
         userDto.setOrders(orderslist);
 
         return userDto;

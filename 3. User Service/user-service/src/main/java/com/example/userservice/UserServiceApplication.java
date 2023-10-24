@@ -1,5 +1,6 @@
 package com.example.userservice;
-
+import com.example.userservice.error.FeignErrorDecoder;
+import feign.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -23,10 +24,23 @@ public class UserServiceApplication {
         return new BCryptPasswordEncoder();
     }
 
+
+    //feign 쓰면 필요없는 코드
     @Bean
     @LoadBalanced
     public RestTemplate getRestTemplate(){
         return new RestTemplate();
     }
+
+    @Bean
+    public Logger.Level feignLoggerLevel(){
+        return Logger.Level.FULL;
+    }
+
+//    컴포넌트화 했으면 여기에 Bean등록 필요 없음
+//    @Bean
+//    public FeignErrorDecoder getFeignErrorDecoder(){
+//        return new FeignErrorDecoder();
+//    }
 
 }
