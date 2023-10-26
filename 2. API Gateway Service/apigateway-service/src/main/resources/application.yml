@@ -50,3 +50,15 @@ spring:
                 baseMessage: Spring Cloud Gateway Global Filter
                 preLogger: true
                 postLogger: true
+#         - id: user-service
+#           uri: lb://USER-SERVICE
+#           predicates:
+#              - Path=/user-service/actuator/**
+#              - Method=GET, POST
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans, httptrace

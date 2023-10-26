@@ -36,4 +36,15 @@ logging:
   level:
     com.example.userservice.client: DEBUG
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh, health, beans
 
+
+
+# config에 올릴거라 주석표시
+#token:
+#  expiration_time: 86400000
+#  secret: user_token
