@@ -22,7 +22,7 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2021.0.3")
+    set('springCloudVersion', "2021.0.8")
 }
 
 dependencies {
@@ -42,7 +42,10 @@ dependencies {
 //    config를 위한 설정
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // mariadb 설정
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.2'
 
 
 }
