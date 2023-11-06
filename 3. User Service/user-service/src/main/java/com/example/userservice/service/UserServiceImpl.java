@@ -14,7 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreaker;
+import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
     BCryptPasswordEncoder passwordEncoder;
@@ -34,10 +35,12 @@ public class UserServiceImpl implements UserService{
     RestTemplate restTemplate;
     OrderServiceClient orderServiceClient;
 
+    CircuitBreakerFactory circuitBreakerFactory;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, Environment env,
-                           RestTemplate restTemplate, OrderServiceClient orderServiceClient) {
+                           RestTemplate restTemplate, OrderServiceClient orderServiceClient,
+                           CircuitBreakerFactory circuitBreakerFactory) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.env = env;
@@ -61,9 +64,11 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto getUserByUserId(String userId) {
         UserEntity userEntity = userRepository.findByUserId(userId);
-        if(userEntity==null) throw new UsernameNotFoundException("User not found");
+        if (userEntity == null) {
+            throw new UsernameNotFoundException("User not found");
+        }
 
-        UserDto userDto = new ModelMapper().map(userEntity,UserDto.class);
+        UserDto userDto = new ModelMapper().map(userEntity, UserDto.class);
 //        List<ResponseOrder> orders = new ArrayList<>();
 
 //        *Using as rest template *
@@ -87,7 +92,11 @@ public class UserServiceImpl implements UserService{
 //
 //        userDto.setOrders(orderslist);
 
-        List<ResponseOrder> orderslist = orderServiceClient.getOrders(userId);
+//        List<ResponseOrder> orderslist = orderServiceClient.getOrders(userId);
+        CircuitBreaker circuitBreaker = circuitBreakerFactory.create("circuitbreaker");
+
+        List<ResponseOrder> orderslist = circuitBreaker.run(() -> orderServiceClient.getOrders(userId),
+                throwable -> new ArrayList<>());
         userDto.setOrders(orderslist);
 
         return userDto;

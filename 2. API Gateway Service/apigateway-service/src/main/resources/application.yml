@@ -33,20 +33,26 @@ spring:
           uri: lb://CATALOG-SERVICE
           predicates:
             - Path=/catalog-service/**
+        - id: category-service
+          uri: lb://CATEGORY-SERVICE
+          predicates:
+            - Path=/category-service/**
+        - id: journey-service
+          uri: lb://JOURNEY-SERVICE
+          predicates:
+            - Path=/journey-service/**
+        - id: mate-service
+          uri: lb://MATE-SERVICE
+          predicates:
+            - Path=/mate-service/**
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
-            - Path=/user-service/actuator/**
-            - Method=GET, POST
-
-        - id: first-service
-          uri: lb://MY-FIRST-SERVICE
+            - Path=/user-service/**
+        - id: check-service
+          uri: lb://CHECK-SERVICE
           predicates:
-            - Path=/first-service/**
-          filters:
-#            - AddRequestHeader=first-request, first-requests-header2
-#            - AddResponseHeader=first-response, first-response-header2
-            - CustomFilter
+            - Path=/check-service/**
         - id: second-service
           uri: lb://MY-SECOND-SERVICE
           predicates:
