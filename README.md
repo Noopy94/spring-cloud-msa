@@ -4,6 +4,11 @@ spring cloud msa 개인 study입니다.
 
 inflearn springcloud로 개발하는 msa 강의를 참고 하고 있습니다.
 
+간단한 서비스(User, Cataglogs, Orders)를 만들고 서비스간 통신에 Feign Client를 활용하고.
+DB에 변화가 필요한 경우 kafka 클러스터로 데이터를 보내 통신하며, 
+Kafka connector를 활용해서 db에 접근하고 update하는 방식입니다.
+
+
 1. Service Discovery
 2. API Gateway Service
 3. Microservice(User, Catalogs, Orders)
